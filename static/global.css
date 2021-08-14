@@ -1,0 +1,31 @@
+/* Noto Sans */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+/* Noto Serif */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+	--gray: rgb(36, 36, 36);
+	--white: rgb(252, 252, 252);
+	--yellow: rgb(240, 193, 73);
+	--orange: rgb(242, 100, 63);
+	--green-w: rgb(86, 184, 179);
+	--green-b: rgb(40, 112, 107);
+}
+
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Noto Serif', serif;
+}
+
+body {
+	font-size: 16px;
+	font-family: 'Noto Sans', sans-serif;
+	position: relative;
+}
