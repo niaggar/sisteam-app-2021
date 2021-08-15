@@ -7,6 +7,10 @@
 </script>
 
 
+<svelte:head>
+	<title>Korapp: Conectate</title>
+</svelte:head>
+
 <div>
     <a class="i" href="auth/login">
         Iniciar sesion con una cuenta existente
@@ -19,8 +23,10 @@
 
 <style>
     :global(body) {
-		background-color: var(--green-b);
+		background-color: var(--green-b) !important;
+        padding: 0;
 	}
+
     div {
         display: flex;
         flex-direction: column;
@@ -30,6 +36,7 @@
         min-height: 100vh;
         padding: 5em 1.5em;
     }
+
     a  {
         display: block;
         width: 100%;
@@ -42,17 +49,21 @@
         font-weight: 700;
         transition: all 0.3s;
     }
+
     a:hover {
         filter: brightness(1.2);
     }
+    
     a:active,
     a:focus {
         box-shadow: 0 0 0 1.5px var(--white);
     }
+
     .i { 
         background-color: var(--yellow);
         color: var(--green-b);
     }
+    
     .s { 
         background-color: var(--green-w);
         color: var(--green-b);

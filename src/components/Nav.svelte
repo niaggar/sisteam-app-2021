@@ -1,7 +1,5 @@
 <script>
 	export let segment;
-
-	setInterval(() => console.log(segment), 2000)
 </script>
 
 <style>

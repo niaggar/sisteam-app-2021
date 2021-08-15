@@ -14,38 +14,42 @@
 	<AcountAlert></AcountAlert>
 {/if}
 
-<article>
-	<h1>Bienvenida</h1>
-	<div>
-		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
-
-		<a href="statistics">
-			Tomar primera medicion!
-		</a>
-	</div>
-</article>
-
-<article>
-	<h1>Noticia destacada</h1>
-	<div>
-		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
-		<a href="feed">
-			Leer mas...
-		</a>
-	</div>
-</article>
-
-<article>
-	<h1>Estadisticas</h1>
-	<div>
-		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
-	</div>
-</article>
+<main>
+	<article>
+		<h1>Bienvenida</h1>
+		<div>
+			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
+	
+			<a href="statistics">
+				Tomar primera medicion!
+			</a>
+		</div>
+	</article>
+	
+	<article>
+		<h1>Noticia destacada</h1>
+		<div>
+			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
+			<a href="feed">
+				Leer mas...
+			</a>
+		</div>
+	</article>
+	
+	<article>
+		<h1>Estadisticas</h1>
+		<div>
+			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
+		</div>
+	</article>
+</main>
 
 
 <style>
-	:global(body) {
-		background-color: #F3F3F3;
+	main {
+		padding: 1.5rem 0.5rem 5.5rem 0.5rem;
+		min-height: 100vh;
+		background-color: #ececec;
 	}
 	
 	article {
@@ -73,5 +77,15 @@
 		text-decoration: none;
 		border-radius: 0.2em;
 		margin-top: 0.5em;
+		transition: all 0.3s;
 	}
+
+	article a:hover {
+        filter: brightness(1.2);
+    }
+
+    article a:active,
+    article a:focus {
+        box-shadow: 0 0 0 1.5px var(--white);
+    }
 </style>

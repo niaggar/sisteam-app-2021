@@ -1,8 +1,5 @@
 <script>
     let noEsVisible = false
-    const clickContinuar = () => {
-        noEsVisible = true
-    }
 </script>
 
 
@@ -10,7 +7,7 @@
     <aside>
         <p>Parece que no tienes conectada una cuenta. Te invitamos a que lo hagas para que puedas disfrutar de todas las funcionalidades!</p>
         <a href="auth">Conectarse</a>
-        <span on:click={clickContinuar}>Continuar sin cuenta</span>
+        <span on:click={() => noEsVisible = !noEsVisible}>Continuar sin cuenta</span>
     </aside>
 </div>
 
@@ -50,5 +47,9 @@
         margin: 1em 0 0.5em 0;
         color: #ffffff;
         text-decoration: none;
+    }
+
+    span {
+        cursor: pointer;
     }
 </style>

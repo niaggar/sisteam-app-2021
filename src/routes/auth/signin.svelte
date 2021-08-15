@@ -1,14 +1,31 @@
 <script>
-    const handleSubmintSignin = () => {}
+    import { goto } from '@sapper/app'
+
+    let email = ''
+    let password = ''
+    let name = ''
+
+    const handleSubmintSignin = (e) => {
+        e.preventDefault()
+        
+        email = email.trim()
+        password = password.trim()
+        name = name.trim()
+
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then((res) => res.user.updateProfile({ displayName: name }))
+            .then(() => goto('/'))
+            .catch((err) => console.error('AUTH ERR ' + err))
+    }
 </script>
 
 
 <div class="container">
     <div>
         <form on:submit={handleSubmintSignin}>
-            <input placeholder="Nombre de usuario" type="text">
-            <input placeholder="Correo electronico" type="email">
-            <input placeholder="Contraseña" type="password">
+            <input required bind:value={name} placeholder="Nombre de usuario" type="text">
+            <input required bind:value={email} placeholder="Correo electronico" type="email">
+            <input required bind:value={password} placeholder="Contraseña" type="password">
             <button type="submit">Crear cuenta</button>
         </form>
     </div>
@@ -18,19 +35,21 @@
 
 <style>
     :global(body) {
-		background-color: var(--green-b);
+		background-color: var(--green-b) !important;
+        padding: 0;
 	}
+
     * {
         display: block;
         width: 100%;
     }
+
     .container {
-        position: absolute;
-        bottom: 0;
-        left: 0;
         width: 100%;
         padding: 3.5em 1.5em;
+        margin-top: 35%;
     }
+
     form * {
         padding: 0.8em;
         margin: 0.5em 0;
@@ -39,20 +58,24 @@
         font-size: 1rem;
         transition: all 0.3s;
     }
+
     form input {
         background: none;
         border-bottom: 4px solid var(--green-w);
         color: var(--green-w);
         margin: 1em 0;
     }
+
     form input::placeholder {
         color: var(--green-w);
         opacity: 0.7;
     }
+
     form input:active,
     form input:focus {
         box-shadow: 0 0 0 2.5px var(--green-w);
     }
+
     form button {
         text-align: center;
         cursor: pointer;
@@ -62,19 +85,22 @@
         color: var(--green-b);
         margin-top: 1em;
     }
+
     form button:hover {
         filter: brightness(1.2);
     }
+
     form button:active,
     form button:focus {
         box-shadow: 0 0 0 1.5px var(--white);
     }
+
     a {
         width: 100%;
         text-align: center;
         color: var(--green-w);
         opacity: 0.7;
         font-weight: 700;
-        margin-top: 25vh;
+        margin-top: 2rem;
     }
 </style>
