@@ -1,5 +1,8 @@
 <script>
     import { goto } from '@sapper/app'
+    import { stores } from '@sapper/app';
+
+	const { session } = stores()
 
     const handleClick = () => {
         firebase.auth().signOut()
@@ -10,9 +13,8 @@
     }
 
     const handleName = () => {
-        const user = firebase.auth().currentUser;
-        console.log(user.displayName)
-        console.log(user.email)
+        console.log($session.userData.name)
+        console.log($session.userData)
     }
 </script>
 

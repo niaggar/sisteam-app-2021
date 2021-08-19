@@ -7,27 +7,31 @@
 
     const { session } = stores()
 
-    onMount(async () => {
-        firebase.auth().onIdTokenChanged(async (user) => {
-            try {
-                if (!user) {
-                    console.log(`User does not exist`)
-                    $session.user = false
-                    return
-                }
-                
-                console.log(user)
-                const token = await user.getIdToken()
-                $session.user = token
-                console.log(`User found and session set! ${user.displayName}`)
 
-            } catch (e) {
-                console.log(`Something went wrong`)
-                $session.user = false
-                return
-            }
-        })
-    })
+    const guardarCredenciales = async () => {
+        const user = await firebase.auth().currentUser
+
+        $session.userData = { 
+            uid: user.uid,
+            name: user.displayName,
+            email: user.email,
+        }
+    }
+
+    const majadorDeUsuario = async (user) => {
+        if (!user) {
+            $session.user = false
+            $session.userData = false
+            return
+        }
+        
+        setTimeout(async () => await guardarCredenciales(), 1000)
+        const token = await user.getIdToken()
+        $session.user = token
+    }
+
+
+    onMount(async () => firebase.auth().onIdTokenChanged(majadorDeUsuario))
 </script>
 
 

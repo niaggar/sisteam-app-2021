@@ -18,6 +18,7 @@
 	<article>
 		<h1>Bienvenida</h1>
 		<div>
+			<h2>Hola  {$session.userData ? $session.userData.name : 'Usuario'}</h2>
 			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
 	
 			<a href="statistics">

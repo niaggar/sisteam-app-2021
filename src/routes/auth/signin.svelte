@@ -1,3 +1,11 @@
+<script context="module">
+	export async function preload(page, session) {
+		let { user } = session
+		if (user)
+		    return this.redirect(302, '/')
+	}
+</script>
+
 <script>
     import { goto } from '@sapper/app'
 
@@ -14,7 +22,7 @@
 
         firebase.auth().createUserWithEmailAndPassword(email, password)
             .then((res) => res.user.updateProfile({ displayName: name }))
-            .then(() => goto('/'))
+            .then(() => setTimeout(()=> goto('/')), 2000 )
             .catch((err) => console.error('AUTH ERR ' + err))
     }
 </script>
