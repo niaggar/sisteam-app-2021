@@ -12,46 +12,32 @@
 	<link rel="icon" type="image/png" href="favicon.png">
 	<link rel="apple-touch-icon" href="logo-192.png">
 
-	<!-- Sapper creates a <script> tag containing `src/client.js`
-	     and anything else it needs to hydrate the app and
-	     initialise the router -->
 	%sapper.scripts%
 
-	<!-- Sapper generates a <style> tag containing critical CSS
-	     for the current page. CSS for the rest of the app is
-	     lazily loaded when it precaches secondary pages -->
 	%sapper.styles%
 
-	<!-- This contains the contents of the <svelte:head> component, if
-	     the current page has one -->
 	%sapper.head%
 </head>
 <body>
-	<!-- The application will be rendered inside this element,
-	     because `src/client.js` references it -->
 	<div id="sapper">%sapper.html%</div>
 
-	<!-- The core Firebase JS SDK is always required and must be listed first -->
 	<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
 	
-	<!-- TODO: Add SDKs for Firebase products that you want to use
-		https://firebase.google.com/docs/web/setup#available-libraries -->
-
 	<script>
-	// Your web app's Firebase configuration
-	var firebaseConfig = {
-		apiKey: "AIzaSyBdJuP2de-6JexA5gtfcDi59CDGJmeabPQ",
-		authDomain: "korea-app-8e06c.firebaseapp.com",
-		databaseURL: "https://korea-app-8e06c-default-rtdb.firebaseio.com",
-		projectId: "korea-app-8e06c",
-		storageBucket: "korea-app-8e06c.appspot.com",
-		messagingSenderId: "653410662416",
-		appId: "1:653410662416:web:affbc689ae3c3c53177295"
-	};
-	// Initialize Firebase
-	firebase.initializeApp(firebaseConfig);
+		var firebaseConfig = {
+			apiKey: "AIzaSyBdJuP2de-6JexA5gtfcDi59CDGJmeabPQ",
+			authDomain: "korea-app-8e06c.firebaseapp.com",
+			databaseURL: "https://korea-app-8e06c-default-rtdb.firebaseio.com",
+			projectId: "korea-app-8e06c",
+			storageBucket: "korea-app-8e06c.appspot.com",
+			messagingSenderId: "653410662416",
+			appId: "1:653410662416:web:affbc689ae3c3c53177295"
+		}
+		
+		firebase.initializeApp(firebaseConfig)
+		const db = firebase.firestore()
 	</script>
 </body>
 </html>
