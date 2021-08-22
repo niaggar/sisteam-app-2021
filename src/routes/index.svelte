@@ -6,7 +6,8 @@
 	const { session } = stores()
 
 
-	let query = null
+	let noticiaDestacada = null
+	let ultimaMedicion = null
 
 	onMount(async () => {
 		await db.collection('news')
@@ -14,11 +15,24 @@
 			.limit(1)
 			.get()
 			.then((querySnapshot) => {
-				querySnapshot.forEach((doc) => query = doc.data())
+				querySnapshot.forEach((doc) => noticiaDestacada = doc.data())
 			})
 			.catch((error) => {
 				console.log("Error getting documents: ", error);
 			});
+
+		if ($session.user) {
+			await db.collection(`mediciones/${$session.userData.uid}`)
+				.orderBy('creacion', 'desc')
+				.limit(1)
+				.get()
+				.then((querySnapshot) => {
+					querySnapshot.forEach((doc) => ultimaMedicion = doc.data())
+				})
+				.catch((error) => {
+					console.log("Error getting documents: ", error);
+				})
+		}
 	})
 </script>
 
@@ -46,12 +60,12 @@
 	
 	<article>
 		<h1>Noticia destacada</h1>
-		{#if query != null}
+		{#if noticiaDestacada != null}
 			<div>
-				<h1>{query.titulo}</h1>
-				<small>{query.creacion.toDate().toLocaleString()}</small>
-				<p>{query.resumen}</p>
-				<a href="feed/{query.tituloCorto}">Leer mas</a>
+				<h1>{noticiaDestacada.titulo}</h1>
+				<small>{noticiaDestacada.creacion.toDate().toLocaleString()}</small>
+				<p>{noticiaDestacada.resumen}</p>
+				<a href="feed/{noticiaDestacada.tituloCorto}">Leer mas</a>
 			</div>
 		{:else}
 			<div><p>Cargando...</p></div>
@@ -60,9 +74,21 @@
 	
 	<article>
 		<h1>Estadisticas</h1>
-		<div>
-			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
-		</div>
+		{#if $session.user && ultimaMedicion}
+			<div>
+				<h1>Ultima Medicion</h1>
+				<p>Hola esta es la ultima medicion de {$session.userData.name}.</p>
+			</div>
+		{:else if $session.user && !ultimaMedicion}
+			<div>
+				<p>El usuario {$session.userData.name} no tiene ninguna medicion almacenada</p>
+			</div>
+		{:else if !$session.user}
+			<div>
+				<p>Para poder almacenar las mediciones es necesario estar conectado</p>
+				<a href="auth">Conectate!</a>
+			</div>
+		{/if}
 	</article>
 </main>
 
