@@ -1,8 +1,25 @@
 <script>
 	import AcountAlert from "../components/AcountAlert.svelte";
 	import { stores } from '@sapper/app';
+	import { onMount } from 'svelte'
 
 	const { session } = stores()
+
+
+	let query = null
+
+	onMount(async () => {
+		await db.collection('news')
+			.orderBy('creacion', 'desc')
+			.limit(1)
+			.get()
+			.then((querySnapshot) => {
+				querySnapshot.forEach((doc) => query = doc.data())
+			})
+			.catch((error) => {
+				console.log("Error getting documents: ", error);
+			});
+	})
 </script>
 
 
@@ -29,12 +46,16 @@
 	
 	<article>
 		<h1>Noticia destacada</h1>
-		<div>
-			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatibus vel delectus reiciendis asperiores earum quasi tempore obcaecati minus veritatis.</p>
-			<a href="feed">
-				Leer mas...
-			</a>
-		</div>
+		{#if query != null}
+			<div>
+				<h1>{query.titulo}</h1>
+				<small>{query.creacion.toDate().toLocaleString()}</small>
+				<p>{query.resumen}</p>
+				<a href="feed/{query.tituloCorto}">Leer mas</a>
+			</div>
+		{:else}
+			<div><p>Cargando...</p></div>
+		{/if}
 	</article>
 	
 	<article>
@@ -60,6 +81,7 @@
 
 	article h1 {
 		font-weight: 200;
+		letter-spacing: 0.06em;
 	}
 
 	article div {
@@ -68,6 +90,12 @@
 		margin-top: 0.5em;
 		border-radius: 0.2em;
 		box-shadow: 0 0 3px 0 #666666a8;
+	}
+
+	article div small {
+		color: #525252;
+		display: block;
+		margin-bottom: 1rem;
 	}
 
 	article a {

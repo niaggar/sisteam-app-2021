@@ -29,3 +29,18 @@ body {
 	font-family: 'Noto Sans', sans-serif;
 	position: relative;
 }
+
+article h2 { 
+	font-weight: 500;
+	margin-bottom: 0.3em;
+}
+
+article p { 
+	margin-bottom: 0.6em; 
+}
+
+article img {
+	width: 100%;
+    margin: 1em 0;
+    border-radius: 1em;
+}
