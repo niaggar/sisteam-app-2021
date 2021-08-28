@@ -18,21 +18,21 @@
 				querySnapshot.forEach((doc) => noticiaDestacada = doc.data())
 			})
 			.catch((error) => {
-				console.log("Error getting documents: ", error);
-			});
+				console.log("Error getting documents: ", error)
+			})
 
-		if ($session.user) {
-			await db.collection(`mediciones/${$session.userData.uid}`)
-				.orderBy('creacion', 'desc')
-				.limit(1)
-				.get()
-				.then((querySnapshot) => {
-					querySnapshot.forEach((doc) => ultimaMedicion = doc.data())
-				})
-				.catch((error) => {
-					console.log("Error getting documents: ", error);
-				})
-		}
+		// if ($session.user) {
+		// 	await db.collection(`mediciones/${$session.userData.uid}`)
+		// 		.orderBy('creacion', 'desc')
+		// 		.limit(1)
+		// 		.get()
+		// 		.then((querySnapshot) => {
+		// 			querySnapshot.forEach((doc) => ultimaMedicion = doc.data())
+		// 		})
+		// 		.catch((error) => {
+		// 			console.log("Error getting documents: ", error)
+		// 		})
+		// }
 	})
 </script>
 
@@ -62,7 +62,7 @@
 		<h1>Noticia destacada</h1>
 		{#if noticiaDestacada != null}
 			<div>
-				<h1>{noticiaDestacada.titulo}</h1>
+				<h2>{noticiaDestacada.titulo}</h2>
 				<small>{noticiaDestacada.creacion.toDate().toLocaleString()}</small>
 				<p>{noticiaDestacada.resumen}</p>
 				<a href="feed/{noticiaDestacada.tituloCorto}">Leer mas</a>
@@ -76,7 +76,7 @@
 		<h1>Estadisticas</h1>
 		{#if $session.user && ultimaMedicion}
 			<div>
-				<h1>Ultima Medicion</h1>
+				<h2>Ultima Medicion</h2>
 				<p>Hola esta es la ultima medicion de {$session.userData.name}.</p>
 			</div>
 		{:else if $session.user && !ultimaMedicion}
@@ -105,9 +105,10 @@
 		margin-bottom: 2.5em;
 	}
 
-	article h1 {
+	article > h1 {
 		font-weight: 200;
 		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 
 	article div {
@@ -133,6 +134,7 @@
 		border-radius: 0.2em;
 		margin-top: 0.5em;
 		transition: all 0.3s;
+		box-shadow: 0 0 3px 0 #666666a8;
 	}
 
 	article a:hover {

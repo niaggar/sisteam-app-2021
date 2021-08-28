@@ -8,14 +8,21 @@
     const { session } = stores()
 
 
-    const guardarCredenciales = async () => {
-        const user = await firebase.auth().currentUser
+    const guardarCredenciales = () => {
+        return new Promise((resolve, reject) => {
+            const user = firebase.auth().currentUser
+            
+            $session.userData = { 
+                uid: user.uid,
+                name: user.displayName,
+                email: user.email,
+            }
 
-        $session.userData = { 
-            uid: user.uid,
-            name: user.displayName,
-            email: user.email,
-        }
+            if ($session.userData.uid)
+                return resolve()
+            else
+                return reject("Error getting the user data")
+        }) 
     }
 
     const majadorDeUsuario = async (user) => {
@@ -25,9 +32,16 @@
             return
         }
         
-        setTimeout(async () => await guardarCredenciales(), 1000)
-        const token = await user.getIdToken()
-        $session.user = token
+        guardarCredenciales()
+            .then(async () => {
+                $session.user = await user.getIdToken()
+                console.log($session.userData)
+            })
+            .catch((err) => {
+                $session.user = false
+                $session.userData = false
+                console.error(err)
+            })
     }
 
 
