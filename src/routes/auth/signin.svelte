@@ -1,17 +1,44 @@
 <script context="module">
 	export async function preload(page, session) {
-		let { user } = session
+		let { user, BATTUTA_API_KEY } = session
 		if (user)
 		    return this.redirect(302, '/')
+        else {
+            return { token: BATTUTA_API_KEY };
+        }
 	}
 </script>
 
+
 <script>
     import { goto } from '@sapper/app'
+    // export let token = ''
 
-    let email = ''
-    let password = ''
-    let name = ''
+    let email, password, name, city = ''
+
+    /*
+    navigator.geolocation.getCurrentPosition(async (p) => {
+        let latitude = p.coords.latitude
+        let longitude = p.coords.longitude
+
+        let geocoder = new google.maps.Geocoder
+        let latlng = { lat: latitude, lng: longitude }
+
+        geocoder.geocode({ 'location': latlng }, (results, status) => {
+            if (status === google.maps.GeocoderStatus.OK) {
+                if (results[1]) {
+                    console.log(results[1].formatted_address)
+                    console.log(results[1])
+                    console.log(results)
+                } else {
+                    window.alert('No hay resultados')
+                }
+            } else {
+                alert('Geocoder failed due to: ' + status)
+            }
+        })
+    })
+    */
 
     const handleSubmintSignin = (e) => {
         e.preventDefault()
@@ -19,9 +46,17 @@
         email = email.trim()
         password = password.trim()
         name = name.trim()
+        city = city.trim().toLowerCase()
 
         firebase.auth().createUserWithEmailAndPassword(email, password)
-            .then((res) => res.user.updateProfile({ displayName: name }))
+            .then((res) => {
+                db.collection('users').doc(res.user.uid)
+                    .set({ name, city })
+                    .then(() => console.log('User ' + res.user.uid + ''))
+                    .catch((err) => console.error(err))
+                
+                res.user.updateProfile({ displayName: name })
+            })
             .then(() => setTimeout(()=> goto('/')), 2000 )
             .catch((err) => console.error('AUTH ERR ' + err))
     }
@@ -34,6 +69,7 @@
             <input required bind:value={name} placeholder="Nombre de usuario" type="text">
             <input required bind:value={email} placeholder="Correo electronico" type="email">
             <input required bind:value={password} placeholder="Contraseña" type="password">
+            <input required bind:value={city} placeholder="Nombre de la ciudad" type="text">
             <button type="submit">Crear cuenta</button>
         </form>
     </div>

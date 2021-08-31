@@ -2,8 +2,50 @@
     import AcountAlert from "../components/AcountAlert.svelte"
     import TablaDatos from '../components/TablaDatos.svelte'
 	import { stores } from '@sapper/app'
+    import { onMount } from 'svelte'
 
     const { session } = stores()
+    
+    let datosHistoricos, unsuscribeHistory
+
+    onMount(async () => {
+        
+    })
+    
+    // Manejador que esta pendiente de los cambios en el historial
+    // de mediciones del usuario
+    const promediarDatos = (documentos) => {
+        doc.datos.forEach((d, i) => {
+            doc.datos.reduce((acumulador, siguiente) => {
+
+            })
+        })
+    }
+
+    $: {
+        if ($session.user){
+            unsuscribeHistory = db.collection('mediciones')
+                .doc($session.userData.city)
+                .collection($session.userData.uid)
+                .orderBy('creacion', 'desc')
+                .limit(7)
+                .onSnapshot((snapshot) => {
+                    let datos = snapshot.docs.map((doc) => doc.data())
+                    console.log('---'.repeat(10))
+                    datos.forEach((doc, index) => {
+                        let fecha = doc.creacion.toDate().toLocaleString()
+                        console.log(doc)
+                        console.log(`medicion ${index + 1} de: ${fecha}`)
+                    })
+                    console.log('---'.repeat(10))
+                })
+        } else {
+            try { unsuscribeHistory() } catch (err) {}
+        }
+    }
+    
+
+    
 
     let datos = {
         caption: "",
@@ -35,35 +77,102 @@
         ]
     }
 
-    let datosHistoricos = {
-        caption: "Promedios desde:</br>Sabado 3 de julio - Miercoles 6 de Julio",
-        datos: [
-            {
+
+    // funcion que recolecta los datos de los sensores y toma la medicio
+    const tomarMedicion = () => {
+        // Colocar codigo de conexion bluetooth con microbit
+
+        function generateRandom(max){
+            return (Math.random() * max).toFixed(3);
+        }
+
+        // Codigo de prueba
+        let ultimaMedicion = [
+            { 
                 nombre: 'Contamiacion auditiva',
-                unidad: 'nan',
-                valor: 100,
-                nivel: 'normal'
-            },
-            {
-                nombre: 'Contamiacion del aire',
-                unidad: 'ded',
-                valor: 50,
-                nivel: 'alto'
-            },
-            {
-                nombre: 'Nivel de rayos UV',
-                unidad: 'met',
-                valor: 200,
-                nivel: 'alto'
-            },
-            {
-                nombre: 'Contaminacion termica',
-                unidad: 'C°',
-                valor: 55,
+                valor: generateRandom(5),
+                unidad: 'gr',
                 nivel: 'medio'
             },
+            { 
+                nombre: 'Contamiacion del aire',
+                valor: generateRandom(20),
+                unidad: 'ctx',
+                nivel: 'alto'
+            },
+            { 
+                nombre: 'Nivel de rayos UV',
+                valor: generateRandom(30),
+                unidad: 'UV',
+                nivel: 'medio'
+            },
+            { 
+                nombre: 'Contaminacion termica',
+                valor: generateRandom(5),
+                unidad: '°C',
+                nivel: 'normal'
+            },
         ]
+
+        let medicionParaAlmacenar = {
+            creacion: firebase.firestore.Timestamp.fromDate(new Date()),
+            datos: [...ultimaMedicion],
+        }
+        
+        if ($session.user)
+            guardarDatos(medicionParaAlmacenar)
     }
+
+    // funcion que se encarga de guardar la medicion en firestore
+    const guardarDatos = (datosParaAlmacenar) => {   
+        db.collection('mediciones')
+            .doc($session.userData.city)
+            .collection($session.userData.uid)
+            .add(datosParaAlmacenar)
+            .catch((err) => alert('Error almacenando datos. ', err))
+
+        db.collection('mediciones')
+            .doc($session.userData.city)
+            .set({ ultimaMedicion: datosParaAlmacenar.creacion })
+            .catch((err) => console.error(err))
+    }   
+
+    // db.collection('mediciones').doc($session.userData.uid)
+    //     .onSnapshot(async (doc) => {
+    //         if (doc.data().driver != 'undifined') { }
+    //     })
+
+    const testear = () => {
+        console.log('Iniciando testeo')
+        console.log('---'.repeat(10))
+
+        db.collection('mediciones')
+            .doc($session.userData.city)
+            .collection($session.userData.uid)
+            .orderBy('creacion', 'desc')
+            .limit(7)
+            .onSnapshot((snapshot) => {
+                let datos = snapshot.docs.map((doc) => doc.data())
+                console.log('---'.repeat(10))
+                datos.forEach((doc, index) => {
+                    let fecha = doc.creacion.toDate().toLocaleString()
+                    console.log(`medicion ${index + 1} de: ${fecha}`)
+                })
+                console.log('---'.repeat(10))
+            })
+        
+        console.log('---'.repeat(10))
+        console.log('Finalizando testeo')
+    }
+    
+    // Codigo para obtener las ciudades disponibles
+    // db.collection('mediciones').get()
+    //     .then(snapshot => {
+    //         snapshot.forEach(doc => {
+    //             console.log(doc.id)
+    //         })
+    //     })
+    //     .catch(err => console.error(err))
 </script>
 
 
@@ -87,14 +196,15 @@
                 <h2>Ultima medicion</h2>
                 <p>Lunes 3 de julio, 12:30pm</p>
             </div>
-            <button>Tomar nueva medicion</button>
+            <button on:click={tomarMedicion}>Tomar nueva medicion</button>
+            <button on:click={testear}>Testear</button>
         </div>
     </article>
     
     <article>
         <h1>Historico</h1>
         <div>
-            <TablaDatos datosMostrar={datosHistoricos}></TablaDatos>
+            <!-- <TablaDatos datosMostrar={datosHistoricos}></TablaDatos> -->
         </div>
     </article>
 

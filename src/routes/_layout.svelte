@@ -9,13 +9,14 @@
 
 
     const guardarCredenciales = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const user = firebase.auth().currentUser
+            const userData = await db.collection('users').doc(user.uid).get()
             
             $session.userData = { 
                 uid: user.uid,
-                name: user.displayName,
                 email: user.email,
+                ...userData.data(),
             }
 
             if ($session.userData.uid)
