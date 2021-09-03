@@ -3,7 +3,7 @@
 </script>
 
 <table>
-    {#if datosMostrar.caption != ''}
+    {#if datosMostrar.caption != '' && datosMostrar.caption != undefined}
         <caption>{@html datosMostrar.caption}</caption>
     {/if}
     <thead>

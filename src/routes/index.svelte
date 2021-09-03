@@ -1,5 +1,6 @@
 <script>
-	import AcountAlert from "../components/AcountAlert.svelte";
+	import AcountAlert from "../components/AcountAlert.svelte"
+	import TablaDatos from '../components/TablaDatos.svelte'
 	import { stores } from '@sapper/app';
 	import { onMount } from 'svelte'
 
@@ -8,6 +9,22 @@
 
 	let noticiaDestacada = null
 	let ultimaMedicion = null
+
+	const tomarUltimaMedicion = () => {
+        db.collection('mediciones')
+            .doc($session.userData.city)
+            .collection($session.userData.uid)
+            .orderBy('creacion', 'desc')
+            .limit(1)
+            .get()
+            .then((snapshot) => {
+                let data = snapshot.docs.map((docs) => docs.data())
+                if (data[0])
+                    ultimaMedicion = data[0]
+            })
+    }
+
+	$: if ($session.user) tomarUltimaMedicion()
 
 	onMount(async () => {
 		await db.collection('news')
@@ -20,19 +37,6 @@
 			.catch((error) => {
 				console.log("Error getting documents: ", error)
 			})
-
-		// if ($session.user) {
-		// 	await db.collection(`mediciones/${$session.userData.uid}`)
-		// 		.orderBy('creacion', 'desc')
-		// 		.limit(1)
-		// 		.get()
-		// 		.then((querySnapshot) => {
-		// 			querySnapshot.forEach((doc) => ultimaMedicion = doc.data())
-		// 		})
-		// 		.catch((error) => {
-		// 			console.log("Error getting documents: ", error)
-		// 		})
-		// }
 	})
 </script>
 
@@ -75,9 +79,10 @@
 	<article>
 		<h1>Estadisticas</h1>
 		{#if $session.user && ultimaMedicion}
-			<div>
+			<div class="ultima-medicion">
 				<h2>Ultima Medicion</h2>
-				<p>Hola esta es la ultima medicion de {$session.userData.name}.</p>
+				<TablaDatos datosMostrar={ultimaMedicion}></TablaDatos>
+				<small>{ultimaMedicion.creacion.toDate().toLocaleString()}</small>
 			</div>
 		{:else if $session.user && !ultimaMedicion}
 			<div>
@@ -145,4 +150,9 @@
     article a:focus {
         box-shadow: 0 0 0 1.5px var(--white);
     }
+
+	.ultima-medicion small {
+		text-align: center;
+		margin-top: 1em;
+	}
 </style>

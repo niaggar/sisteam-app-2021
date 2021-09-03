@@ -6,20 +6,68 @@
 
     const { session } = stores()
     
-    let datosHistoricos, unsuscribeHistory
+    let unsuscribeHistory
+    let ultimaMedicion = false
+    let promedioMedicion = false
 
-    onMount(async () => {
-        
-    })
-    
+
+    // Al iniciar la aplicacion ecupera la ultima medicion almacenada
+    // en firetore 
+    const tomarUltimaMedicion = () => {
+        db.collection('mediciones')
+            .doc($session.userData.city)
+            .collection($session.userData.uid)
+            .orderBy('creacion', 'desc')
+            .limit(1)
+            .get()
+            .then((snapshot) => {
+                let data = snapshot.docs.map((docs) => docs.data())
+                if (data[0])
+                    ultimaMedicion = data[0]
+            })
+    }
+
+
+
     // Manejador que esta pendiente de los cambios en el historial
     // de mediciones del usuario
-    const promediarDatos = (documentos) => {
-        doc.datos.forEach((d, i) => {
-            doc.datos.reduce((acumulador, siguiente) => {
+    const promediarDatos = (datos) => {
+        let promedio = [
+            { 
+                nombre: 'Contamiacion auditiva',
+                valor: 0,
+                unidad: 'gr',
+            },
+            { 
+                nombre: 'Contamiacion del aire',
+                valor: 0,
+                unidad: 'ctx',
+            },
+            { 
+                nombre: 'Nivel de rayos UV',
+                valor: 0,
+                unidad: 'UV',
+            },
+            { 
+                nombre: 'Contaminacion termica',
+                valor: 0,
+                unidad: '°C',
+            },
+        ]
 
-            })
+        datos.forEach((d) => {
+            promedio[0].valor += parseInt(d.datos[0].valor);
+            promedio[1].valor += parseInt(d.datos[1].valor);
+            promedio[2].valor += parseInt(d.datos[2].valor);
+            promedio[3].valor += parseInt(d.datos[3].valor);
         })
+
+        promedio[0].valor = (promedio[0].valor / datos.length).toFixed(3)
+        promedio[1].valor = (promedio[1].valor / datos.length).toFixed(3)
+        promedio[2].valor = (promedio[2].valor / datos.length).toFixed(3)
+        promedio[3].valor = (promedio[3].valor / datos.length).toFixed(3)
+
+        return { datos: promedio }
     }
 
     $: {
@@ -31,55 +79,19 @@
                 .limit(7)
                 .onSnapshot((snapshot) => {
                     let datos = snapshot.docs.map((doc) => doc.data())
-                    console.log('---'.repeat(10))
-                    datos.forEach((doc, index) => {
-                        let fecha = doc.creacion.toDate().toLocaleString()
-                        console.log(doc)
-                        console.log(`medicion ${index + 1} de: ${fecha}`)
-                    })
-                    console.log('---'.repeat(10))
+                    console.log(datos)
+                    promedioMedicion = promediarDatos(datos)
                 })
+            
+            tomarUltimaMedicion()
         } else {
             try { unsuscribeHistory() } catch (err) {}
         }
     }
-    
-
-    
-
-    let datos = {
-        caption: "",
-        datos: [
-            {
-                nombre: 'Contamiacion auditiva',
-                unidad: 'nan',
-                valor: 100,
-                nivel: 'normal'
-            },
-            {
-                nombre: 'Contamiacion del aire',
-                unidad: 'ded',
-                valor: 50,
-                nivel: 'alto'
-            },
-            {
-                nombre: 'Nivel de rayos UV',
-                unidad: 'met',
-                valor: 200,
-                nivel: 'alto'
-            },
-            {
-                nombre: 'Contaminacion termica',
-                unidad: 'C°',
-                valor: 55,
-                nivel: 'medio'
-            },
-        ]
-    }
 
 
     // funcion que recolecta los datos de los sensores y toma la medicio
-    const tomarMedicion = () => {
+    const tomarMedicion = async () => {
         // Colocar codigo de conexion bluetooth con microbit
 
         function generateRandom(max){
@@ -87,7 +99,7 @@
         }
 
         // Codigo de prueba
-        let ultimaMedicion = [
+        let mediciones = [
             { 
                 nombre: 'Contamiacion auditiva',
                 valor: generateRandom(5),
@@ -114,17 +126,17 @@
             },
         ]
 
-        let medicionParaAlmacenar = {
+        ultimaMedicion = {
             creacion: firebase.firestore.Timestamp.fromDate(new Date()),
-            datos: [...ultimaMedicion],
+            datos: [...mediciones],
         }
         
         if ($session.user)
-            guardarDatos(medicionParaAlmacenar)
+            guardarDatos(ultimaMedicion)
     }
 
     // funcion que se encarga de guardar la medicion en firestore
-    const guardarDatos = (datosParaAlmacenar) => {   
+    const guardarDatos = (datosParaAlmacenar) => {
         db.collection('mediciones')
             .doc($session.userData.city)
             .collection($session.userData.uid)
@@ -142,28 +154,58 @@
     //         if (doc.data().driver != 'undifined') { }
     //     })
 
-    const testear = () => {
-        console.log('Iniciando testeo')
-        console.log('---'.repeat(10))
+    /*
+    Estructura de los datos:
 
-        db.collection('mediciones')
-            .doc($session.userData.city)
-            .collection($session.userData.uid)
-            .orderBy('creacion', 'desc')
-            .limit(7)
-            .onSnapshot((snapshot) => {
-                let datos = snapshot.docs.map((doc) => doc.data())
-                console.log('---'.repeat(10))
-                datos.forEach((doc, index) => {
-                    let fecha = doc.creacion.toDate().toLocaleString()
-                    console.log(`medicion ${index + 1} de: ${fecha}`)
-                })
-                console.log('---'.repeat(10))
-            })
-        
-        console.log('---'.repeat(10))
-        console.log('Finalizando testeo')
-    }
+    MEDICIONES
+        --- CIUDADES nombre
+        CALI
+            ultima medicion fecha
+            
+            -- USUARIOS uid
+            asd121f1v8v12e
+            
+                --- MEDICION uid
+                d31f113gafa
+                    fecha de mediciones
+                    datos
+                
+                --- MEDICION uid
+                d31f113gafa
+                    fecha de mediciones
+                    datos
+            
+            -- USUARIOS uid
+            a123y9721f1v8v12e
+
+                --- MEDICION uid
+                d317635113gafa
+                    fecha de mediciones
+                    datos
+
+        --- CIUDADES nombre
+        BOGOTA
+            ultima medicion fecha
+            
+            -- USUARIOS uid
+            asd121f1v8v12e
+            
+                --- MEDICION uid
+                d31f113gafa
+                    fecha de mediciones
+                    datos
+            
+            -- USUARIOS uid
+            a123y9721f1v8v12e
+
+                --- MEDICION uid
+                d317635113gafa
+                    fecha de mediciones
+                    datos
+
+
+    
+    */
     
     // Codigo para obtener las ciudades disponibles
     // db.collection('mediciones').get()
@@ -188,23 +230,34 @@
     <article>
         <h1>Mediciones</h1>
         <div>
-            <TablaDatos datosMostrar={datos}></TablaDatos>
+            {#if ultimaMedicion}
+                <TablaDatos datosMostrar={ultimaMedicion}></TablaDatos>
+            {:else}
+                <p>Parece que no hay mediciones almacenadas...</p>
+            {/if}
         </div>
         
         <div class="nueva-medicion-seccion">
             <div>
-                <h2>Ultima medicion</h2>
-                <p>Lunes 3 de julio, 12:30pm</p>
+                {#if ultimaMedicion}
+                    <h2>Ultima medicion</h2>
+                    <p>{ultimaMedicion.creacion.toDate().toLocaleString()}</p>
+                {:else}
+                    <p>Parece que no hay mediciones almacenadas...</p>
+                {/if}
             </div>
             <button on:click={tomarMedicion}>Tomar nueva medicion</button>
-            <button on:click={testear}>Testear</button>
         </div>
     </article>
     
     <article>
         <h1>Historico</h1>
         <div>
-            <!-- <TablaDatos datosMostrar={datosHistoricos}></TablaDatos> -->
+            {#if promedioMedicion}
+                <TablaDatos datosMostrar={promedioMedicion}></TablaDatos>
+            {:else}
+                <p>Parece que no hay mediciones almacenadas...</p>
+            {/if}
         </div>
     </article>
 
