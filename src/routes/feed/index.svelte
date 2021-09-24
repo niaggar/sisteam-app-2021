@@ -3,21 +3,20 @@
 
 	let noticias = false
 
-	onMount(async () => {
-		
+	const obtenerListaDeNoticias = async () => {
 		noticias = await db.collection('news')
 			.orderBy('creacion', 'desc')
 			.get()
-			.then((querySnapshot) => {
-				return querySnapshot.docs.map((doc) => {
+			.then((querySnapshot) => querySnapshot.docs.map((doc) => {
 					return {
 						id: doc.id,
 						content: doc.data()
-					}	
-				})
-			})
-			.catch((err) => console.error('GET NEWS ERROR:', err))
-	})
+					}
+				}))
+			.catch((err) => console.error('GET NEWS ERROR: ', err))
+	}
+
+	onMount(() => obtenerListaDeNoticias())
 </script>
 
 

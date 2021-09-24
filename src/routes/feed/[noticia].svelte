@@ -15,17 +15,15 @@
 	export let noticia = 'Undifined'
 	let query = null
 
-	onMount(async () => {
-		await db.collection('news')
+	const obtenerNoticia = async () => {
+		query = await db.collection('news')
 			.where('tituloCorto', '==', noticia)
 			.get()
-			.then((querySnapshot) => {
-				querySnapshot.forEach((doc) => query = doc.data())
-			})
-			.catch((error) => {
-				console.log("Error getting documents: ", error)
-			});
-	})
+			.then((querySnapshot) => querySnapshot.docs[0].data())
+			.catch((error) => console.log('ERROR buscando la noticia: ', error))
+	}
+
+	onMount(() => obtenerNoticia())
 </script>
 
 

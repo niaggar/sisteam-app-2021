@@ -10,7 +10,7 @@
 	let noticiaDestacada = null
 	let ultimaMedicion = null
 
-	const tomarUltimaMedicion = () => {
+	const obtenerUltimaMedicion = () => {
         db.collection('mediciones')
             .doc($session.userData.city)
             .collection($session.userData.uid)
@@ -24,10 +24,8 @@
             })
     }
 
-	$: if ($session.user) tomarUltimaMedicion()
-
-	onMount(async () => {
-		await db.collection('news')
+	const obtenerNoticiaDestacada = () => {
+		db.collection('news')
 			.orderBy('creacion', 'desc')
 			.limit(1)
 			.get()
@@ -37,7 +35,11 @@
 			.catch((error) => {
 				console.log("Error getting documents: ", error)
 			})
-	})
+	}
+
+	$: if ($session.user) obtenerUltimaMedicion()
+
+	onMount(() => obtenerNoticiaDestacada())
 </script>
 
 

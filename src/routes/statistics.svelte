@@ -79,8 +79,9 @@
                 .limit(7)
                 .onSnapshot((snapshot) => {
                     let datos = snapshot.docs.map((doc) => doc.data())
-                    console.log(datos)
                     promedioMedicion = promediarDatos(datos)
+
+                    console.log(datos)
                 })
             
             tomarUltimaMedicion()
